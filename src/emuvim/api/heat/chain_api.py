@@ -58,13 +58,15 @@ class ChainApi(Resource):
     def dump_playbook(self):
         with self.manage.lock:
             with open(self.playbook_file, 'a') as logfile:
-                req_data = request.data
-                if req_data is None:
-                    req_data = ""
                 data = "# CHAIN API\n"
-                data += "curl -X {type} -H \"Content-type: application/json\" -d '{data}' {url}".format(type=request.method,
-                                                                                        data=req_data,
+                if len(request.data) > 0:
+                    data += "curl -X {type} -H \"Content-type: application/json\" -d '{data}' {url}".format(type=request.method,
+                                                                                        data=request.data,
                                                                                         url=request.url)
+                else:
+                    data += "curl -X {type} -H \"Content-type: application/json\" {url}".format(
+                        type=request.method,
+                        url=request.url)
                 logfile.write(data + "\n")
 
 
