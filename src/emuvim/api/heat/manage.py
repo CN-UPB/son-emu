@@ -967,22 +967,13 @@ class OpenstackManage(object):
         """
         if not cookie:
             return False
+        main_cmd = "del-flows -OOpenFlow13"
         logging.debug("Deleting flow by cookie %d" % (cookie))
-        flows = list()
-        # we have to call delete-group for each switch
+        # delete flow on each switch
+        # ryu fails here once again so use ovs
         for node in self.net.switches:
-            flow = dict()
-            flow["dpid"] = int(node.dpid, 16)
-            flow["cookie"] = cookie
-            flow['cookie_mask'] = int('0xffffffffffffffff', 16)
-
-            flows.append(flow)
-        for flow in flows:
-            logging.debug("Deleting flowentry with cookie %d" % (
-                flow["cookie"]))
-            if self.net.controller == RemoteController:
-                self.net.ryu_REST('stats/flowentry/delete', data=flow)
-
+            cmd = "cookie=%s/0xFFFFFFFFFFFFFFFF" % (hex(cookie))
+            self.net[node.name].dpctl(main_cmd, cmd)
 
         # it is possible that the cookie was already cleared
         if cookie in self.cookies:
