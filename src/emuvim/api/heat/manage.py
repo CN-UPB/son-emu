@@ -107,7 +107,7 @@ class OpenstackManage(object):
 
             # create a port for the host
             port = Port("root-port")
-            #port.id = str(uuid.uuid4())
+            # port.id = str(uuid.uuid4())
             port.net_name = fn.name
 
             # get next free ip
@@ -125,7 +125,6 @@ class OpenstackManage(object):
             self.floating_intf = self.net.addLink(self.floating_root, self.floating_switch).intf1
             self.floating_root.setIP(root_ip, intf=self.floating_intf)
             self.floating_nodes[(self.floating_root.name, root_ip)] = self.floating_root
-
 
     def stop_floating_network(self):
         self._net = None
@@ -263,19 +262,7 @@ class OpenstackManage(object):
                 # on the same interface are created
                 src_node.setHostRoute(dst_node.intf(vnf_dst_interface).IP(), vnf_src_interface)
 
-            try:
-                son_emu_data = json.loads(self.get_son_emu_chain_data(vnf_src_name))
-            except:
-                son_emu_data = dict()
-            if "son_emu_data" not in son_emu_data:
-                son_emu_data["son_emu_data"] = dict()
-            if "interfaces" not in son_emu_data["son_emu_data"]:
-                son_emu_data["son_emu_data"]["interfaces"] = dict()
-            if vnf_src_interface not in son_emu_data["son_emu_data"]["interfaces"]:
-                son_emu_data["son_emu_data"]["interfaces"][vnf_src_interface] = list()
-                son_emu_data["son_emu_data"]["interfaces"][vnf_src_interface].append(dst_intf.IP())
-
-            self.set_son_emu_chain_data(vnf_src_name, son_emu_data)
+            self.add_ip_to_son_emu_data(dst_intf.IP(), vnf_src_name, vnf_src_interface)
 
             if kwargs.get('bidirectional', False):
                 # call the reverse direction
@@ -325,6 +312,35 @@ class OpenstackManage(object):
         except Exception as ex:
             logging.exception("RPC error.")
             return ex.message
+
+    def add_ip_to_son_emu_data(self, ip, vnf_name, vnf_interface):
+        """
+        Get all current son_emu_data with a new ip added to it.
+        This will also set the data on the node!
+
+        :param ip: Ip that should be added
+        :type ip: ``str``
+        :param vnf_name: Name of the node where the ip should be added
+        :type vnf_name: ``str``
+        :param vnf_interface: Name of the interface on the node
+        :type vnf_interface: ``str``
+        :return: dict containing the current son emu data with the ip added
+        """
+        try:
+            son_emu_data = json.loads(self.get_son_emu_chain_data(vnf_name))
+        except:
+            son_emu_data = dict()
+        if "son_emu_data" not in son_emu_data:
+            son_emu_data["son_emu_data"] = dict()
+        if "interfaces" not in son_emu_data["son_emu_data"]:
+            son_emu_data["son_emu_data"]["interfaces"] = dict()
+        if vnf_interface not in son_emu_data["son_emu_data"]["interfaces"]:
+            son_emu_data["son_emu_data"]["interfaces"][vnf_interface] = list()
+            son_emu_data["son_emu_data"]["interfaces"][vnf_interface].append(ip)
+
+        self.set_son_emu_chain_data(vnf_name, son_emu_data)
+
+        return son_emu_data
 
     def set_son_emu_chain_data(self, vnf_name, data):
         """
@@ -515,7 +531,7 @@ class OpenstackManage(object):
         data["cookie"] = cookie
 
         # lb mac for src -> target connections
-        lb_mac = "31:33:70:%02x:%02x:%02x" % (random.randint(0, 255),random.randint(0, 255),random.randint(0, 255))
+        lb_mac = "31:33:70:%02x:%02x:%02x" % (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
         # calculate lb ip as src_intf.ip +1
         octets = src_ip.split('.')
@@ -554,7 +570,7 @@ class OpenstackManage(object):
             current_hop = src_sw
             switch_inport_nr = src_sw_inport_nr
 
-            #self.setup_arp_reply_at(src_sw, src_sw_inport_nr, target_ip, target_mac, cookie=cookie)
+            # self.setup_arp_reply_at(src_sw, src_sw_inport_nr, target_ip, target_mac, cookie=cookie)
             net.getNodeByName(dst_vnf_name).setHostRoute(src_ip, dst_vnf_interface)
 
             # choose free vlan if path contains more than 1 switch
@@ -700,6 +716,9 @@ class OpenstackManage(object):
         logging.debug("Switch: %s, CMD: %s" % (src_sw, cmd))
         net[src_sw].dpctl(main_cmd, cmd)
 
+        # set the son-emu-data with the new ip
+        self.add_ip_to_son_emu_data(plus_one, src_vnf_name, src_vnf_interface)
+
         # finally add all flow data to the internal data storage
         self.full_lb_data[(src_vnf_name, src_vnf_interface)] = data
 
@@ -763,7 +782,7 @@ class OpenstackManage(object):
                     self.floating_links[datacenter] = \
                         net.addLink(self.floating_switch, datacenter)
                 path = \
-                self._get_path(self.floating_root.name, dst_vnf_name, self.floating_intf.name, dst_vnf_interface)[0]
+                    self._get_path(self.floating_root.name, dst_vnf_name, self.floating_intf.name, dst_vnf_interface)[0]
 
             if isinstance(path, dict):
                 self.delete_flow_by_cookie(cookie)
