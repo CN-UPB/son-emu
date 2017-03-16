@@ -303,6 +303,10 @@ class OpenstackManage(object):
             if 'cookie' in kwargs:
                 return self.delete_flow_by_cookie(kwargs.get('cookie'))
 
+            if kwargs.get('bidirectional', False):
+                self.delete_chain_by_intf(vnf_dst_name, kwargs.get('vnf_dst_interface'),
+                                          vnf_src_name, kwargs.get('vnf_src_interface'))
+
             return self.delete_chain_by_intf(vnf_src_name, kwargs.get('vnf_src_interface'),
                                              vnf_dst_name, kwargs.get('vnf_dst_interface'))
         except Exception as ex:
@@ -979,7 +983,10 @@ class OpenstackManage(object):
             if self.net.controller == RemoteController:
                 self.net.ryu_REST('stats/flowentry/delete', data=flow)
 
-        self.cookies.remove(cookie)
+
+        # it is possible that the cookie was already cleared
+        if cookie in self.cookies:
+            self.cookies.remove(cookie)
         return True
 
     def delete_chain_by_intf(self, src_vnf_name, src_vnf_intf, dst_vnf_name, dst_vnf_intf):
