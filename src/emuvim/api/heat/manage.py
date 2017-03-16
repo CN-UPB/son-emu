@@ -220,16 +220,16 @@ class OpenstackManage(object):
             src_node = self.net.getNodeByName(vnf_src_name)
             dst_node = self.net.getNodeByName(vnf_dst_name)
             dst_intf = dst_node.intf(vnf_dst_interface)
+            cookie = kwargs.get('cookie', self.get_cookie())
+            self.cookies.add(cookie)
             if layer2:
                 switch, inport = self._get_connected_switch_data(vnf_src_name, vnf_src_interface)
-                self.setup_arp_reply_at(switch, inport, dst_intf.IP(), dst_intf.MAC())
+                self.setup_arp_reply_at(switch, inport, dst_intf.IP(), dst_intf.MAC(), cookie=cookie)
                 if isinstance(match, str):
                     match += ",dl_dst=%s" % dst_intf.MAC()
                 else:
                     match = "dl_dst=%s" % dst_intf.MAC()
 
-            cookie = kwargs.get('cookie', self.get_cookie())
-            self.cookies.add(cookie)
             c = self.net.setChain(
                 vnf_src_name, vnf_dst_name,
                 vnf_src_interface=vnf_src_interface,
@@ -271,7 +271,7 @@ class OpenstackManage(object):
                     path = list(reversed(path))
                 self.network_action_start(vnf_dst_name, vnf_src_name, vnf_src_interface=vnf_dst_interface,
                                           vnf_dst_interface=vnf_src_interface, bidirectional=False,
-                                          layer2=kwargs.get('layer2', False), path=path,
+                                          layer2=kwargs.get('layer2', False), path=path, cookie=cookie,
                                           no_route=kwargs.get('no_route'))
 
             self.full_chain_data[flow] = data
