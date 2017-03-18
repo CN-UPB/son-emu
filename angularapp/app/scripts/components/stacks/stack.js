@@ -1,11 +1,13 @@
-// Define the `app` module
-var app = angular.module('app', ['chart.js']);
+/*
+ * Stacks Controller.
+*/
+angular.module('app').controller('StacksCtrl', function StacksController($scope, $stateParams, $http) {
+  $scope.activeItemIndex = 0;
 
-app.controller('ApplicationController', function ApplicationController($scope, $http) {
-	$scope.activeItemIndex = 0;
+  $scope.datacenter = $stateParams.datacenterId;
 
 	$scope.getStackNameFromIndex = function(index){
-		if($scope.servers != undefined)
+		if($scope.servers !== undefined)
 			return $scope.servers[index].name;
 	};
 
@@ -25,7 +27,7 @@ app.controller('ApplicationController', function ApplicationController($scope, $
 	};
 
 	$scope.getListOfServers = function() {
-		$http.get('http://0.0.0.0:8775/v2.1/id/servers').then(function(response) {
+		$http.get('http://0.0.0.0:8775/v2.1/' + $scope.datacenter + '/servers').then(function(response) {
 			$scope.servers = response.data.servers;
 
 			$scope.setActiveStack($scope.activeItemIndex);
@@ -53,7 +55,7 @@ app.controller('ApplicationController', function ApplicationController($scope, $
 			$scope.cpuUsageLabels.push(timeToShow);
 		  $scope.cpuUsageData.push($scope.emuData['CPU_%']);	
 
-		  $scope.memoryUsageData = [$scope.emuData['MEM_used'] * 500, ($scope.emuData['MEM_limit'] - $scope.emuData['MEM_used'])];
+		  $scope.memoryUsageData = [$scope.emuData.MEM_used * 500, ($scope.emuData.MEM_limit - $scope.emuData.MEM_used)];
 	  });	
 	};
 });

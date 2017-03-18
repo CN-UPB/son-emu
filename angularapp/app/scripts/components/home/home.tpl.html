@@ -1,0 +1,21 @@
+<h1>{{ title }}</h1>
+
+<table class="table table-bordered"> 
+	<thead> 
+		<tr> 
+			<th>#</th> 
+			<th>Name</th> 
+			<th>Type</th> 
+			<th>Action</th> 
+		</tr> 
+	</thead> 
+
+	<tbody> 
+		<tr ng-repeat="node in nodes track by $index"> 
+			<th scope="row">{{$index + 1}}</th> 
+			<td>{{node.name}}</td> 
+			<td>{{node.type}}</td>  
+			<td><a ui-sref="stacks({ datacenterId: node.name })">View</a></td> 
+		</tr> 
+	</tbody> 
+</table>

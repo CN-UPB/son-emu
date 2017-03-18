@@ -1,0 +1,11 @@
+export PYTHONPATH=/home/waleed/Documents/son-emu/src/
+
+
+
+export OS_AUTH_URL=http://localhost:5001/v2.0
+export OS_IDENTITY_API_VERSION=2.0
+export OS_TENANT_ID=fc394f2ab2df4114bde39905f800dc57
+export OS_REGION_NAME=RegionOne
+export OS_USERNAME=bla
+export OS_PASSWORD=bla
+
