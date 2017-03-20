@@ -15,7 +15,38 @@
 			<th scope="row">{{$index + 1}}</th> 
 			<td>{{node.name}}</td> 
 			<td>{{node.type}}</td>  
-			<td><a ui-sref="stacks({ datacenterId: node.name })">View</a></td> 
+			<td><a href="" ng-click="selected.node = node" data-toggle="modal" data-target="#myModal">View</a></td> 
 		</tr> 
 	</tbody> 
 </table>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Select Port</h4>
+      </div>
+      <div class="modal-body">
+	      <ul>
+				  <li>
+				  	<a target="_blank" ui-sref="stacks({ datacenterId: selected.node.name, port: 8775 })">8775</a>
+				  </li>
+				  
+				  <li>
+				  	<a target="_blank" ui-sref="stacks({ datacenterId: selected.node.name, port: 8776 })">8776</a>
+				  </li>
+				  
+				  <li>
+				  	<a target="_blank" ui-sref="stacks({ datacenterId: selected.node.name, port: 8777 })">8777</a>
+				  </li>
+				  
+				  <li>
+				  	<a target="_blank" ui-sref="stacks({ datacenterId: selected.node.name, port: 8778 })">8778</a>
+				  </li>
+				</ul>
+      </div>
+    </div>
+  </div>
+</div>

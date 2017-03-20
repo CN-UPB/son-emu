@@ -5,6 +5,7 @@ angular.module('app').controller('StacksCtrl', function StacksController($scope,
   $scope.activeItemIndex = 0;
 
   $scope.datacenter = $stateParams.datacenterId;
+  $scope.port = $stateParams.port;
 
 	$scope.getStackNameFromIndex = function(index){
 		if($scope.servers !== undefined)
@@ -27,7 +28,7 @@ angular.module('app').controller('StacksCtrl', function StacksController($scope,
 	};
 
 	$scope.getListOfServers = function() {
-		$http.get('http://0.0.0.0:8775/v2.1/' + $scope.datacenter + '/servers').then(function(response) {
+		$http.get('http://0.0.0.0:' + $scope.port + '/v2.1/' + $scope.datacenter + '/servers').then(function(response) {
 			$scope.servers = response.data.servers;
 
 			$scope.setActiveStack($scope.activeItemIndex);

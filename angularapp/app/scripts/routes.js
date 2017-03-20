@@ -15,7 +15,7 @@ angular.module('app')
     })
 
     .state('stacks', {
-      url: "/datacenters/{datacenterId}",
+      url: "/datacenters/{datacenterId}/{port}",
       templateUrl: "app/scripts/components/stacks/stack.tpl.html",
       controller: 'StacksCtrl'
     });
