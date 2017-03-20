@@ -609,8 +609,8 @@ class OpenstackManage(object):
                     index_edge_out = 0
                     switch_outport_nr = net.DCNetwork_graph[current_hop][next_hop][index_edge_out]['src_port_nr']
 
-                cmd = 'priority=1,in_port=%s,cookie=%s' % (switch_inport_nr, cookie)
-                cmd_back = 'priority=1,in_port=%s,cookie=%s' % (switch_outport_nr, cookie)
+                cmd = 'priority=0,in_port=%s,cookie=%s' % (switch_inport_nr, cookie)
+                cmd_back = 'priority=0,in_port=%s,cookie=%s' % (switch_outport_nr, cookie)
                 # if a vlan is picked, the connection is routed through multiple switches
                 if vlan is not None:
                     if path.index(current_hop) == 0:  # first node
@@ -818,8 +818,8 @@ class OpenstackManage(object):
                     switch_outport_nr = net.DCNetwork_graph[current_hop][next_hop][index_edge_out]['src_port_nr']
 
                 # default filters, just overwritten on the first node and last node
-                cmd = 'priority=1,in_port=%s,cookie=%s' % (switch_inport_nr, cookie)
-                cmd_back = 'priority=1,in_port=%s,cookie=%s' % (switch_outport_nr, cookie)
+                cmd = 'priority=0,in_port=%s,cookie=%s' % (switch_inport_nr, cookie)
+                cmd_back = 'priority=0,in_port=%s,cookie=%s' % (switch_outport_nr, cookie)
                 if i == 0:  # first node
                     cmd = 'in_port=%s' % src_sw_inport_nr
                     cmd += ',cookie=%s' % cookie
