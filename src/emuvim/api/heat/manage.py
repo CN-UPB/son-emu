@@ -271,7 +271,7 @@ class OpenstackManage(object):
                     path = list(reversed(path))
                 self.network_action_start(vnf_dst_name, vnf_src_name, vnf_src_interface=vnf_dst_interface,
                                           vnf_dst_interface=vnf_src_interface, bidirectional=False,
-                                          layer2=kwargs.get('layer2', False), path=path, cookie=cookie,
+                                          layer2=layer2, path=path, cookie=cookie,
                                           no_route=kwargs.get('no_route'))
 
             self.full_chain_data[flow] = data
